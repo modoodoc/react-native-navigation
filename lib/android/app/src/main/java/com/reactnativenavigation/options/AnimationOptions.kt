@@ -20,22 +20,6 @@ import kotlin.math.max
 open class AnimationOptions(json: JSONObject?) : LayoutAnimation {
     constructor() : this(null)
 
-    private fun parse(json: JSONObject?) {
-        json?.let {
-            val iter = json.keys()
-            while (iter.hasNext()) {
-                when (val key = iter.next()) {
-                    "id" -> id = TextParser.parse(json, key)
-                    "enable", "enabled" -> enabled = BoolParser.parse(json, key)
-                    "waitForRender" -> waitForRender = BoolParser.parse(json, key)
-                    "sharedElementTransitions" -> sharedElements = SharedElements.parse(json)
-                    "elementTransitions" -> elementTransitions = ElementTransitions.parse(json)
-                    else -> valueOptions.add(ValueAnimationOptions.parse(json.optJSONObject(key), getAnimProp(key)))
-                }
-            }
-        }
-    }
-
     @JvmField var id: Text = NullText()
     @JvmField var enabled: Bool = NullBool()
     @JvmField var waitForRender: Bool = NullBool()
@@ -44,7 +28,22 @@ open class AnimationOptions(json: JSONObject?) : LayoutAnimation {
     private var valueOptions = HashSet<ValueAnimationOptions>()
 
     init {
-        json?.let { parse(it) }
+        parse(json)
+    }
+
+    private fun parse(json: JSONObject?) {
+        json ?: return
+        val iter = json.keys()
+        while (iter.hasNext()) {
+            when (val key = iter.next()) {
+                "id" -> id = TextParser.parse(json, key)
+                "enable", "enabled" -> enabled = BoolParser.parse(json, key)
+                "waitForRender" -> waitForRender = BoolParser.parse(json, key)
+                "sharedElementTransitions" -> sharedElements = SharedElements.parse(json)
+                "elementTransitions" -> elementTransitions = ElementTransitions.parse(json)
+                else -> valueOptions.add(ValueAnimationOptions.parse(json.optJSONObject(key), getAnimProp(key)))
+            }
+        }
     }
 
     fun mergeWith(other: AnimationOptions) {
@@ -70,6 +69,7 @@ open class AnimationOptions(json: JSONObject?) : LayoutAnimation {
             || waitForRender.hasValue()
             || sharedElements.hasValue()
             || elementTransitions.hasValue()
+            || valueOptions.isNotEmpty()
 
     fun getAnimation(view: View) = getAnimation(view, AnimatorSet())
 

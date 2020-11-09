@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.reactnativenavigation.options.NestedAnimationsOptions;
+import com.reactnativenavigation.options.StackAnimationOptions;
 import com.reactnativenavigation.options.Options;
 import com.reactnativenavigation.react.CommandListener;
 import com.reactnativenavigation.react.CommandListenerAdapter;
@@ -161,7 +161,7 @@ public class StackController extends ParentController<StackLayout> {
         addChildToStack(child, resolvedOptions);
 
         if (toRemove != null) {
-            NestedAnimationsOptions animation = resolvedOptions.animations.push;
+            StackAnimationOptions animation = resolvedOptions.animations.push;
             if (animation.enabled.isTrueOrUndefined()) {
                 animator.push(child, toRemove, resolvedOptions, () -> onPushAnimationComplete(child, toRemove, listener));
             } else {

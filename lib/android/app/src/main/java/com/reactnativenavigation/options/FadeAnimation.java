@@ -1,9 +1,11 @@
 package com.reactnativenavigation.options;
 
+import com.reactnativenavigation.options.StackAnimationOptions.Companion.CommandType;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class FadeAnimation extends NestedAnimationsOptions {
+public class FadeAnimation extends StackAnimationOptions {
     public FadeAnimation(boolean reversed) {
         try {
             JSONObject alpha = new JSONObject();
@@ -16,7 +18,7 @@ public class FadeAnimation extends NestedAnimationsOptions {
 
             JSONObject animation = new JSONObject();
             animation.put("content", content);
-            mergeWith(parse(animation));
+            mergeWith(new StackAnimationOptions(reversed ? CommandType.Pop : CommandType.Push, animation));
         } catch (JSONException e) {
             e.printStackTrace();
         }

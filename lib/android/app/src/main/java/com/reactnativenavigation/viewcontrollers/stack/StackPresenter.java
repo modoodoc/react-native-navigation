@@ -261,14 +261,14 @@ public class StackPresenter {
         if (options.visible.isFalse()) {
             topBarController.resetViewProperties();
             if (options.animate.isTrueOrUndefined() && componentOptions.animations.push.enabled.isTrueOrUndefined()) {
-                topBarController.hideAnimate(animationOptions.pop.topBar, 0, getTopBarTranslationAnimationDelta(stack, child));
+                topBarController.hideAnimate(animationOptions.pop.topBar.exit, 0, getTopBarTranslationAnimationDelta(stack, child));
             } else {
                 topBarController.hide();
             }
         } else if (options.visible.isTrueOrUndefined()) {
             topBarController.resetViewProperties();
             if (options.animate.isTrueOrUndefined() && componentOptions.animations.push.enabled.isTrueOrUndefined()) {
-                topBarController.showAnimate(animationOptions.push.topBar, getTopBarTranslationAnimationDelta(stack, child));
+                topBarController.showAnimate(animationOptions.push.topBar.enter, getTopBarTranslationAnimationDelta(stack, child));
             } else {
                 topBarController.show();
             }
@@ -345,7 +345,7 @@ public class StackPresenter {
     public void onChildWillAppear(StackController parent, ViewController appearing, ViewController disappearing) {
         if (disappearing.options.topBar.visible.isTrueOrUndefined() && appearing.options.topBar.visible.isFalse()) {
             if (disappearing.options.topBar.animate.isTrueOrUndefined() && disappearing.options.animations.pop.enabled.isTrueOrUndefined()) {
-                topBarController.hideAnimate(disappearing.options.animations.pop.topBar, 0, getTopBarTranslationAnimationDelta(parent, appearing));
+                topBarController.hideAnimate(disappearing.options.animations.pop.topBar.exit, 0, getTopBarTranslationAnimationDelta(parent, appearing));
             } else {
                 topBarController.hide();
             }
@@ -470,14 +470,14 @@ public class StackPresenter {
         topBarController.resetViewProperties();
         if (topBarOptions.visible.isFalse()) {
             if (topBarOptions.animate.isTrueOrUndefined()) {
-                topBarController.hideAnimate(animationsOptions.pop.topBar, 0, getTopBarTranslationAnimationDelta(stack, child));
+                topBarController.hideAnimate(animationsOptions.pop.topBar.exit, 0, getTopBarTranslationAnimationDelta(stack, child));
             } else {
                 topBarController.hide();
             }
         }
         if (topBarOptions.visible.isTrue()) {
             if (topBarOptions.animate.isTrueOrUndefined()) {
-                topBarController.showAnimate(animationsOptions.push.topBar, getTopBarTranslationAnimationDelta(stack, child));
+                topBarController.showAnimate(animationsOptions.push.topBar.enter, getTopBarTranslationAnimationDelta(stack, child));
             } else {
                 topBarController.show();
             }

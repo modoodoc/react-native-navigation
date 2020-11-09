@@ -3,7 +3,7 @@ import {
   AnimationOptions,
   OptionsModalPresentationStyle,
 } from 'react-native-navigation';
-import { Dimensions } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import Colors from './Colors';
 import flags from '../flags';
 
@@ -34,7 +34,7 @@ const setDefaultOptions = () =>
     modalPresentationStyle: OptionsModalPresentationStyle.fullScreen,
   });
 
-const slideAnimations: AnimationOptions = {
+const slideAnimationsIOS: AnimationOptions = {
   push: {
     waitForRender: true,
     content: {
@@ -65,6 +65,75 @@ const slideAnimations: AnimationOptions = {
     },
   },
 };
+
+const slideAnimationsAndroid: AnimationOptions = {
+  push: {
+    waitForRender: true,
+    content: {
+      enter: {
+        translationX: {
+          from: width,
+          to: 0,
+          duration: useSlowOpenScreenAnimations ? SHOW_DURATION : 300,
+          interpolation: {
+            type: 'spring',
+            damping: 500,
+            stiffness: 200,
+            mass: 5,
+          },
+        },
+      },
+      exit: {
+        translationX: {
+          from: 0,
+          to: -50,
+          duration: useSlowOpenScreenAnimations ? SHOW_DURATION : 300,
+          interpolation: {
+            type: 'spring',
+            damping: 500,
+            stiffness: 200,
+            mass: 5,
+          },
+        },
+      },
+    },
+  },
+  pop: {
+    content: {
+      enter: {
+        translationX: {
+          from: -50,
+          to: 0,
+          duration: useSlowOpenScreenAnimations ? SHOW_DURATION : 300,
+          interpolation: {
+            type: 'spring',
+            damping: 500,
+            stiffness: 200,
+            mass: 5,
+          },
+        },
+      },
+      exit: {
+        translationX: {
+          from: 0,
+          to: width,
+          duration: useSlowOpenScreenAnimations ? SHOW_DURATION : 300,
+          interpolation: {
+            type: 'spring',
+            damping: 500,
+            stiffness: 200,
+            mass: 5,
+          },
+        },
+      },
+    },
+  },
+};
+
+const slideAnimations = Platform.select({
+  ios: slideAnimationsIOS,
+  android: slideAnimationsAndroid,
+});
 
 const customAnimations: AnimationOptions = {
   showModal: {

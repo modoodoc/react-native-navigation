@@ -81,7 +81,7 @@ open class ModalAnimator @JvmOverloads constructor(
             show: AnimationOptions,
             set: AnimatorSet
     ) {
-        val fade = if (show.isFadeAnimation()) show else FadeAnimation().content
+        val fade = if (show.isFadeAnimation()) show else FadeAnimation().content.enter
         val transitionAnimators = transitionAnimatorCreator.create(show, fade, disappearing, appearing)
         set.playTogether(fade.getAnimation(appearing.view), transitionAnimators)
         transitionAnimators.listeners.forEach { listener: Animator.AnimatorListener -> set.addListener(listener) }
@@ -115,7 +115,7 @@ open class ModalAnimator @JvmOverloads constructor(
             dismiss: AnimationOptions,
             set: AnimatorSet
     ) {
-        val fade = if (dismiss.isFadeAnimation()) dismiss else FadeAnimation(true).content
+        val fade = if (dismiss.isFadeAnimation()) dismiss else FadeAnimation(true).content.exit
         val transitionAnimators = transitionAnimatorCreator.create(dismiss, fade, disappearing, appearing)
         set.playTogether(fade.getAnimation(disappearing.view), transitionAnimators)
         transitionAnimators.listeners.forEach { listener: Animator.AnimatorListener -> set.addListener(listener) }

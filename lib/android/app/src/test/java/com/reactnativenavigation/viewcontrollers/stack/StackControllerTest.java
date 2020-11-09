@@ -16,7 +16,7 @@ import com.reactnativenavigation.mocks.TitleBarReactViewCreatorMock;
 import com.reactnativenavigation.mocks.TopBarBackgroundViewCreatorMock;
 import com.reactnativenavigation.mocks.TypefaceLoaderMock;
 import com.reactnativenavigation.options.AnimationOptions;
-import com.reactnativenavigation.options.NestedAnimationsOptions;
+import com.reactnativenavigation.options.StackAnimationOptions;
 import com.reactnativenavigation.options.Options;
 import com.reactnativenavigation.options.params.Bool;
 import com.reactnativenavigation.options.params.Text;
@@ -600,7 +600,7 @@ public class StackControllerTest extends BaseTest {
         mergeOptions.animations.pop.content = new AnimationOptions(content);
 
         uut.pop(mergeOptions, new CommandListenerAdapter());
-        ArgumentCaptor<NestedAnimationsOptions> captor = ArgumentCaptor.forClass(NestedAnimationsOptions.class);
+        ArgumentCaptor<StackAnimationOptions> captor = ArgumentCaptor.forClass(StackAnimationOptions.class);
         verify(animator, times(1)).pop(any(), any(), captor.capture(), any());
         Animator animator = captor.getValue().content
                 .getAnimation(mockView(activity))
@@ -628,7 +628,7 @@ public class StackControllerTest extends BaseTest {
         uut.setDefaultOptions(defaultOptions);
 
         uut.pop(Options.EMPTY, new CommandListenerAdapter());
-        ArgumentCaptor<NestedAnimationsOptions> captor = ArgumentCaptor.forClass(NestedAnimationsOptions.class);
+        ArgumentCaptor<StackAnimationOptions> captor = ArgumentCaptor.forClass(StackAnimationOptions.class);
         verify(animator, times(1)).pop(any(), any(), captor.capture(), any());
         Animator animator = captor.getValue().content
                 .getAnimation(mockView(activity))
@@ -1132,7 +1132,7 @@ public class StackControllerTest extends BaseTest {
         ParentController parentController = Mockito.mock(ParentController.class);
         uut.setParentController(parentController);
         Options options = new Options();
-        options.animations.push = NestedAnimationsOptions.parse(new JSONObject());
+        options.animations.push = StackAnimationOptions.parse(new JSONObject());
         options.topBar.testId = new Text("id");
         options.fabOptions.id = new Text("fabId");
         ViewController vc = mock(ViewController.class);
