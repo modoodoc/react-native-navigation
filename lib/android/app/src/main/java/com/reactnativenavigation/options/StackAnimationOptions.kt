@@ -51,10 +51,6 @@ open class StackAnimationOptions @JvmOverloads constructor(commandType: CommandT
         return topBar.exit.hasValue() || content.exit.hasValue() || bottomTabs.exit.hasValue() || waitForRender.hasValue()
     }
 
-    fun hasElementsTransition(): Boolean {
-        return sharedElements.hasValue() || elementTransitions.hasValue()
-    }
-
     private fun parse(commandType: CommandType, json: JSONObject?) {
         json ?: return
         content = ViewAnimationOptions(commandType, json.optJSONObject("content"))

@@ -144,23 +144,21 @@ open class StackAnimator @JvmOverloads constructor(
             appearing.view.alpha = 0f
             appearing.addOnAppearedListener {
                 appearing.view.alpha = 1f
-                val animators = mutableListOf(push.content.enter.getAnimation(appearing.view, getDefaultPushAnimation(appearing.view)))
-                if (push.content.exit.hasValue()) {
-                    animators.add(push.content.exit.getAnimation(disappearing.view))
-                }
-                set.playTogether(animators.toList())
-                set.doOnEnd { disappearing.view.resetViewProperties() }
-                set.start()
+                animatePushWithoutElementTransitions(set, push, appearing, disappearing)
             }
         } else {
-            val animators = mutableListOf(push.content.enter.getAnimation(appearing.view, getDefaultPushAnimation(appearing.view)))
-            if (push.content.exit.hasValue()) {
-                animators.add(push.content.exit.getAnimation(disappearing.view))
-            }
-            set.playTogether(animators.toList())
-            set.doOnEnd { disappearing.view.resetViewProperties() }
-            set.start()
+            animatePushWithoutElementTransitions(set, push, appearing, disappearing)
         }
+    }
+
+    private fun animatePushWithoutElementTransitions(set: AnimatorSet, push: StackAnimationOptions, appearing: ViewController<*>, disappearing: ViewController<*>) {
+        val animators = mutableListOf(push.content.enter.getAnimation(appearing.view, getDefaultPushAnimation(appearing.view)))
+        if (push.content.exit.hasValue()) {
+            animators.add(push.content.exit.getAnimation(disappearing.view))
+        }
+        set.playTogether(animators.toList())
+        set.doOnEnd { disappearing.view.resetViewProperties() }
+        set.start()
     }
 
     fun cancelPushAnimations() {
