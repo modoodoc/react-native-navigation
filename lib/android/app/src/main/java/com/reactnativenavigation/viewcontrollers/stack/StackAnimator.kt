@@ -28,6 +28,8 @@ open class StackAnimator @JvmOverloads constructor(
 ) : BaseAnimator(context) {
     private val runningPushAnimations: MutableMap<View, Animator> = HashMap()
 
+    fun cancelPushAnimations() = runningPushAnimations.values.forEach(Animator::cancel)
+
     open fun setRoot(root: View, setRoot: AnimationOptions, onAnimationEnd: Runnable) {
         root.visibility = View.INVISIBLE
         val set = setRoot.getAnimation(root)
@@ -162,8 +164,6 @@ open class StackAnimator @JvmOverloads constructor(
         }
         set.start()
     }
-
-    fun cancelPushAnimations() = runningPushAnimations.values.forEach(Animator::cancel)
 
     @RestrictTo(RestrictTo.Scope.TESTS)
     fun endPushAnimation(view: View?) {
