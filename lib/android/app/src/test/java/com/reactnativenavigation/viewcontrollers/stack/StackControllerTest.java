@@ -18,6 +18,7 @@ import com.reactnativenavigation.mocks.TypefaceLoaderMock;
 import com.reactnativenavigation.options.AnimationOptions;
 import com.reactnativenavigation.options.StackAnimationOptions;
 import com.reactnativenavigation.options.Options;
+import com.reactnativenavigation.options.StackAnimationOptions.Companion.CommandType;
 import com.reactnativenavigation.options.params.Bool;
 import com.reactnativenavigation.options.params.Text;
 import com.reactnativenavigation.react.CommandListenerAdapter;
@@ -436,7 +437,7 @@ public class StackControllerTest extends BaseTest {
     }
 
     @Test
-    public void setRoot_inViewDidAppearIsInvokedBeforePreviousRootIsDestroyed() {
+    public void setRoot_onViewDidAppearIsInvokedBeforePreviousRootIsDestroyed() {
         disablePushAnimation(child1, child2, child3);
         uut.push(child1, new CommandListenerAdapter());
 
@@ -597,12 +598,12 @@ public class StackControllerTest extends BaseTest {
         x.put("from", 0);
         x.put("to", 1000);
         content.put("x", x);
-        mergeOptions.animations.pop.content = new AnimationOptions(content);
+        mergeOptions.animations.pop.content.exit = new AnimationOptions(content);
 
         uut.pop(mergeOptions, new CommandListenerAdapter());
         ArgumentCaptor<StackAnimationOptions> captor = ArgumentCaptor.forClass(StackAnimationOptions.class);
         verify(animator, times(1)).pop(any(), any(), captor.capture(), any());
-        Animator animator = captor.getValue().content
+        Animator animator = captor.getValue().content.exit
                 .getAnimation(mockView(activity))
                 .getChildAnimations()
                 .get(0);
@@ -624,13 +625,13 @@ public class StackControllerTest extends BaseTest {
         x.put("from", 0);
         x.put("to", 1000);
         content.put("x", x);
-        defaultOptions.animations.pop.content = new AnimationOptions(content);
+        defaultOptions.animations.pop.content.exit = new AnimationOptions(content);
         uut.setDefaultOptions(defaultOptions);
 
         uut.pop(Options.EMPTY, new CommandListenerAdapter());
         ArgumentCaptor<StackAnimationOptions> captor = ArgumentCaptor.forClass(StackAnimationOptions.class);
         verify(animator, times(1)).pop(any(), any(), captor.capture(), any());
-        Animator animator = captor.getValue().content
+        Animator animator = captor.getValue().content.exit
                 .getAnimation(mockView(activity))
                 .getChildAnimations()
                 .get(0);
@@ -699,7 +700,7 @@ public class StackControllerTest extends BaseTest {
 
                 uut.push(child2, new CommandListenerAdapter());
                 child2.onViewWillAppear();
-                verify(topBarController, times(0)).showAnimate(child2.options.animations.push.topBar, 0);
+                verify(topBarController, times(0)).showAnimate(child2.options.animations.push.topBar.enter, 0);
                 assertThat(uut.getTopBar().getVisibility()).isEqualTo(View.VISIBLE);
                 verify(topBarController, times(2)).resetViewProperties();
             }
@@ -984,7 +985,7 @@ public class StackControllerTest extends BaseTest {
                         uut.pop(Options.EMPTY, new CommandListenerAdapter() {
                             @Override
                             public void onSuccess(String childId) {
-                                verify(topBarController, times(1)).hideAnimate(child2.options.animations.pop.topBar, 0, 0);
+                                verify(topBarController, times(1)).hideAnimate(child2.options.animations.pop.topBar.exit, 0, 0);
                             }
                         });
                     }
@@ -1012,7 +1013,7 @@ public class StackControllerTest extends BaseTest {
                 assertThat(uut.getTopBar().getVisibility()).isEqualTo(View.VISIBLE);
 
                 uut.pop(Options.EMPTY, new CommandListenerAdapter());
-                verify(topBarController, times(0)).hideAnimate(child2.options.animations.pop.topBar, 0, 0);
+                verify(topBarController, times(0)).hideAnimate(child2.options.animations.pop.topBar.exit, 0, 0);
                 assertThat(uut.getTopBar().getVisibility()).isEqualTo(View.GONE);
             }
         });
@@ -1132,7 +1133,7 @@ public class StackControllerTest extends BaseTest {
         ParentController parentController = Mockito.mock(ParentController.class);
         uut.setParentController(parentController);
         Options options = new Options();
-        options.animations.push = StackAnimationOptions.parse(new JSONObject());
+        options.animations.push = new StackAnimationOptions(CommandType.Push, new JSONObject());
         options.topBar.testId = new Text("id");
         options.fabOptions.id = new Text("fabId");
         ViewController vc = mock(ViewController.class);
@@ -1141,7 +1142,7 @@ public class StackControllerTest extends BaseTest {
         uut.mergeChildOptions(options, vc);
         ArgumentCaptor<Options> captor = ArgumentCaptor.forClass(Options.class);
         verify(parentController, times(1)).mergeChildOptions(captor.capture(), eq(vc));
-        assertThat(captor.getValue().animations.push.hasValue()).isFalse();
+        assertThat(captor.getValue().animations.push.hasEnterValue()).isFalse();
         assertThat(captor.getValue().topBar.testId.hasValue()).isFalse();
         assertThat(captor.getValue().fabOptions.hasValue()).isFalse();
     }

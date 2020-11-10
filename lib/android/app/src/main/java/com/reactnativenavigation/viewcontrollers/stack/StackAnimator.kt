@@ -157,7 +157,9 @@ open class StackAnimator @JvmOverloads constructor(
             animators.add(push.content.exit.getAnimation(disappearing.view))
         }
         set.playTogether(animators.toList())
-        set.doOnEnd { disappearing.view.resetViewProperties() }
+        set.doOnEnd {
+            if (!disappearing.isDestroyed) disappearing.view.resetViewProperties()
+        }
         set.start()
     }
 
