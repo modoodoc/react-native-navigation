@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.reactnativenavigation.BaseTest;
@@ -16,8 +15,8 @@ import com.reactnativenavigation.mocks.TitleBarReactViewCreatorMock;
 import com.reactnativenavigation.mocks.TopBarBackgroundViewCreatorMock;
 import com.reactnativenavigation.mocks.TypefaceLoaderMock;
 import com.reactnativenavigation.options.AnimationOptions;
-import com.reactnativenavigation.options.StackAnimationOptions;
 import com.reactnativenavigation.options.Options;
+import com.reactnativenavigation.options.StackAnimationOptions;
 import com.reactnativenavigation.options.StackAnimationOptions.Companion.CommandType;
 import com.reactnativenavigation.options.params.Bool;
 import com.reactnativenavigation.options.params.Text;
@@ -257,7 +256,7 @@ public class StackControllerTest extends BaseTest {
         ShadowLooper.idleMainLooper();
         verify(child2).onViewWillAppear();
         assertThat(child2.isViewShown()).isTrue();
-        animator.endPushAnimation(child2.getView());
+        animator.endPushAnimation(child2);
         assertThat(child1.getView().getParent()).isNull();
     }
 
@@ -396,12 +395,10 @@ public class StackControllerTest extends BaseTest {
         disablePushAnimation(child1);
         uut.setRoot(Collections.singletonList(child1), new CommandListenerAdapter());
 
-        ViewGroup c2View = child2.getView();
-        ViewGroup c3View = child3.getView();
         uut.setRoot(Collections.singletonList(child2), new CommandListenerAdapter());
         uut.setRoot(Collections.singletonList(child3), new CommandListenerAdapter());
-        animator.endPushAnimation(c2View);
-        animator.endPushAnimation(c3View);
+        animator.endPushAnimation(child2);
+        animator.endPushAnimation(child3);
 
         assertContainsOnlyId(child3.getId());
     }
@@ -810,10 +807,9 @@ public class StackControllerTest extends BaseTest {
         uut.push(child1, Mockito.mock(CommandListenerAdapter.class));
         uut.push(child2, Mockito.mock(CommandListenerAdapter.class));
 
-        ViewGroup pushed = child3.getView();
         uut.push(child3, Mockito.mock(CommandListenerAdapter.class));
         uut.popTo(child1, Options.EMPTY, Mockito.mock(CommandListenerAdapter.class));
-        animator.endPushAnimation(pushed);
+        animator.endPushAnimation(child3);
         assertContainsOnlyId(child1.getId());
     }
 
@@ -907,10 +903,9 @@ public class StackControllerTest extends BaseTest {
         uut.push(child1, Mockito.mock(CommandListenerAdapter.class));
         uut.push(child2, Mockito.mock(CommandListenerAdapter.class));
 
-        ViewGroup pushed = child3.getView();
         uut.push(child3, Mockito.mock(CommandListenerAdapter.class));
         uut.popToRoot(Options.EMPTY, Mockito.mock(CommandListenerAdapter.class));
-        animator.endPushAnimation(pushed);
+        animator.endPushAnimation(child3);
         assertContainsOnlyId(child1.getId());
     }
 

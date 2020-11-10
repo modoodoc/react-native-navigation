@@ -46,8 +46,8 @@ public class StackController extends ParentController<StackLayout> {
     private IdStack<ViewController> stack = new IdStack<>();
     private final StackAnimator animator;
     private final EventEmitter eventEmitter;
-    private TopBarController topBarController;
-    private BackButtonHelper backButtonHelper;
+    private final TopBarController topBarController;
+    private final BackButtonHelper backButtonHelper;
     private final StackPresenter presenter;
     private final FabPresenter fabPresenter;
 

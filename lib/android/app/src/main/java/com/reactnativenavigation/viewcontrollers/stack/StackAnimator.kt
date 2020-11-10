@@ -28,7 +28,7 @@ open class StackAnimator @JvmOverloads constructor(
         private val transitionAnimatorCreator: TransitionAnimatorCreator = TransitionAnimatorCreator()
 ) : BaseAnimator(context) {
     @VisibleForTesting
-    val runningPushAnimations: MutableMap<View, AnimatorSet> = HashMap()
+    val runningPushAnimations: MutableMap<ViewController<*>, AnimatorSet> = HashMap()
     @VisibleForTesting
     val runningPopAnimations: MutableMap<ViewController<*>, AnimatorSet> = HashMap()
 
@@ -51,7 +51,7 @@ open class StackAnimator @JvmOverloads constructor(
 
     fun push(appearing: ViewController<*>, disappearing: ViewController<*>, options: Options, onAnimationEnd: Runnable) {
         val set = createPushAnimator(appearing, onAnimationEnd)
-        runningPushAnimations[appearing.view] = set
+        runningPushAnimations[appearing] = set
         if (options.animations.push.sharedElements.hasValue()) {
             pushWithElementTransition(appearing, disappearing, options, set)
         } else {
@@ -60,8 +60,8 @@ open class StackAnimator @JvmOverloads constructor(
     }
 
     open fun pop(appearing: ViewController<*>, disappearing: ViewController<*>, pop: StackAnimationOptions, onAnimationEnd: Runnable) {
-        if (runningPushAnimations.containsKey(disappearing.view)) {
-            runningPushAnimations[disappearing.view]!!.cancel()
+        if (runningPushAnimations.containsKey(disappearing)) {
+            runningPushAnimations[disappearing]!!.cancel()
             onAnimationEnd.run()
         } else {
             animatePop(appearing, disappearing, pop, onAnimationEnd)
@@ -121,13 +121,13 @@ open class StackAnimator @JvmOverloads constructor(
             private var isCancelled = false
             override fun onAnimationCancel(animation: Animator) {
                 isCancelled = true
-                runningPushAnimations.remove(appearing.view)
+                runningPushAnimations.remove(appearing)
                 onAnimationEnd.run()
             }
 
             override fun onAnimationEnd(animation: Animator) {
                 if (!isCancelled) {
-                    runningPushAnimations.remove(appearing.view)
+                    runningPushAnimations.remove(appearing)
                     onAnimationEnd.run()
                 }
             }
@@ -173,7 +173,7 @@ open class StackAnimator @JvmOverloads constructor(
     }
 
     @RestrictTo(RestrictTo.Scope.TESTS)
-    fun endPushAnimation(view: View?) {
+    fun endPushAnimation(view: ViewController<*>) {
         if (runningPushAnimations.containsKey(view)) {
             runningPushAnimations[view]!!.end()
         }

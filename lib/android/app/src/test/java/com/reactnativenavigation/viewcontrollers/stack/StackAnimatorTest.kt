@@ -35,7 +35,7 @@ class StackAnimatorTest : BaseTest() {
         val onAnimationEnd = mock<Runnable>()
         uut.push(child2, child1, Options.EMPTY, onAnimationEnd)
 
-        val pushAnimator = uut.runningPushAnimations[child2.view]!!
+        val pushAnimator = uut.runningPushAnimations[child2]!!
         assertThat(pushAnimator.childAnimations).hasSize(1)
         val appearingAnimatorSet = pushAnimator.childAnimations.first() as AnimatorSet
         (appearingAnimatorSet.childAnimations).forEach {
@@ -50,7 +50,7 @@ class StackAnimatorTest : BaseTest() {
         val onAnimationEnd = mock<Runnable>()
         uut.push(child2, child1, child2.options, onAnimationEnd)
 
-        val pushAnimator = uut.runningPushAnimations[child2.view]!!
+        val pushAnimator = uut.runningPushAnimations[child2]!!
         assertThat(pushAnimator.childAnimations).hasSize(2)
 
         val enter = pushAnimator.childAnimations.first() as AnimatorSet
