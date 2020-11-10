@@ -6,6 +6,7 @@ import android.animation.AnimatorSet
 import android.content.Context
 import android.view.View
 import androidx.annotation.RestrictTo
+import androidx.annotation.VisibleForTesting
 import androidx.core.animation.doOnEnd
 import com.reactnativenavigation.options.AnimationOptions
 import com.reactnativenavigation.options.FadeAnimation
@@ -26,7 +27,10 @@ open class StackAnimator @JvmOverloads constructor(
         context: Context,
         private val transitionAnimatorCreator: TransitionAnimatorCreator = TransitionAnimatorCreator()
 ) : BaseAnimator(context) {
-    private val runningPushAnimations: MutableMap<View, Animator> = HashMap()
+    @VisibleForTesting
+    val runningPushAnimations: MutableMap<View, AnimatorSet> = HashMap()
+    @VisibleForTesting
+    val runningPopAnimations: MutableMap<ViewController<*>, AnimatorSet> = HashMap()
 
     fun cancelPushAnimations() = runningPushAnimations.values.forEach(Animator::cancel)
 
@@ -66,7 +70,7 @@ open class StackAnimator @JvmOverloads constructor(
 
     private fun animatePop(appearing: ViewController<*>, disappearing: ViewController<*>, pop: StackAnimationOptions, onAnimationEnd: Runnable) {
         GlobalScope.launch(Dispatchers.Main.immediate) {
-            val set = createPopAnimator(onAnimationEnd)
+            val set = createPopAnimator(disappearing, onAnimationEnd)
             if (pop.sharedElements.hasValue()) {
                 popWithElementTransitions(appearing, disappearing, pop, set)
             } else {
@@ -93,15 +97,18 @@ open class StackAnimator @JvmOverloads constructor(
         set.start()
     }
 
-    private fun createPopAnimator(onAnimationEnd: Runnable): AnimatorSet {
+    private fun createPopAnimator(disappearing: ViewController<*>, onAnimationEnd: Runnable): AnimatorSet {
         val set = AnimatorSet()
+        runningPopAnimations[disappearing] = set
         set.addListener(object : AnimatorListenerAdapter() {
             private var cancelled = false
             override fun onAnimationCancel(animation: Animator) {
                 cancelled = true
+                runningPopAnimations.remove(disappearing)
             }
 
             override fun onAnimationEnd(animation: Animator) {
+                runningPopAnimations.remove(disappearing)
                 if (!cancelled) onAnimationEnd.run()
             }
         })
