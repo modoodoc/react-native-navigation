@@ -161,12 +161,7 @@ open class StackAnimator @JvmOverloads constructor(
         set.start()
     }
 
-    fun cancelPushAnimations() {
-        for (view in runningPushAnimations.keys) {
-            runningPushAnimations[view]!!.cancel()
-            runningPushAnimations.remove(view)
-        }
-    }
+    fun cancelPushAnimations() = runningPushAnimations.values.forEach(Animator::cancel)
 
     @RestrictTo(RestrictTo.Scope.TESTS)
     fun endPushAnimation(view: View?) {
