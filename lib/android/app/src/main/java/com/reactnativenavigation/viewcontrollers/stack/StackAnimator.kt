@@ -4,11 +4,9 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.AnimatorSet
 import android.content.Context
-import android.view.View
 import androidx.annotation.RestrictTo
 import androidx.annotation.VisibleForTesting
 import androidx.core.animation.doOnEnd
-import com.reactnativenavigation.options.AnimationOptions
 import com.reactnativenavigation.options.FadeAnimation
 import com.reactnativenavigation.options.StackAnimationOptions
 import com.reactnativenavigation.options.Options
@@ -31,22 +29,24 @@ open class StackAnimator @JvmOverloads constructor(
     val runningPushAnimations: MutableMap<ViewController<*>, AnimatorSet> = HashMap()
     @VisibleForTesting
     val runningPopAnimations: MutableMap<ViewController<*>, AnimatorSet> = HashMap()
+    @VisibleForTesting
+    val runningSetRootAnimations: MutableMap<ViewController<*>, AnimatorSet> = HashMap()
 
     fun cancelPushAnimations() = runningPushAnimations.values.forEach(Animator::cancel)
 
-    open fun setRoot(root: View, setRoot: AnimationOptions, onAnimationEnd: Runnable) {
-        root.visibility = View.INVISIBLE
-        val set = setRoot.getAnimation(root)
-        set.addListener(object : AnimatorListenerAdapter() {
-            override fun onAnimationStart(animation: Animator) {
-                root.visibility = View.VISIBLE
+    fun setRoot(appearing: ViewController<*>, disappearing: ViewController<*>, options: Options, onAnimationEnd: Runnable) {
+        val set = createSetRootAnimator(appearing, onAnimationEnd)
+        runningSetRootAnimations[appearing] = set
+        val setRoot = options.animations.setStackRoot
+        if (setRoot.waitForRender.isTrue) {
+            appearing.view.alpha = 0f
+            appearing.addOnAppearedListener {
+                appearing.view.alpha = 1f
+                animateSetRoot(set, setRoot, appearing, disappearing)
             }
-
-            override fun onAnimationEnd(animation: Animator) {
-                onAnimationEnd.run()
-            }
-        })
-        set.start()
+        } else {
+            animateSetRoot(set, setRoot, appearing, disappearing)
+        }
     }
 
     fun push(appearing: ViewController<*>, disappearing: ViewController<*>, options: Options, onAnimationEnd: Runnable) {
@@ -98,7 +98,7 @@ open class StackAnimator @JvmOverloads constructor(
     }
 
     private fun createPopAnimator(disappearing: ViewController<*>, onAnimationEnd: Runnable): AnimatorSet {
-        val set = AnimatorSet()
+        val set = createAnimatorSet()
         runningPopAnimations[disappearing] = set
         set.addListener(object : AnimatorListenerAdapter() {
             private var cancelled = false
@@ -116,7 +116,7 @@ open class StackAnimator @JvmOverloads constructor(
     }
 
     private fun createPushAnimator(appearing: ViewController<*>, onAnimationEnd: Runnable): AnimatorSet {
-        val set = AnimatorSet()
+        val set = createAnimatorSet()
         set.addListener(object : AnimatorListenerAdapter() {
             private var isCancelled = false
             override fun onAnimationCancel(animation: Animator) {
@@ -128,6 +128,26 @@ open class StackAnimator @JvmOverloads constructor(
             override fun onAnimationEnd(animation: Animator) {
                 if (!isCancelled) {
                     runningPushAnimations.remove(appearing)
+                    onAnimationEnd.run()
+                }
+            }
+        })
+        return set
+    }
+
+    private fun createSetRootAnimator(appearing: ViewController<*>, onAnimationEnd: Runnable): AnimatorSet {
+        val set = createAnimatorSet()
+        set.addListener(object : AnimatorListenerAdapter() {
+            private var isCancelled = false
+            override fun onAnimationCancel(animation: Animator) {
+                isCancelled = true
+                runningSetRootAnimations.remove(appearing)
+                onAnimationEnd.run()
+            }
+
+            override fun onAnimationEnd(animation: Animator) {
+                if (!isCancelled) {
+                    runningSetRootAnimations.remove(appearing)
                     onAnimationEnd.run()
                 }
             }
@@ -171,6 +191,20 @@ open class StackAnimator @JvmOverloads constructor(
         }
         set.start()
     }
+
+    private fun animateSetRoot(set: AnimatorSet, setRoot: StackAnimationOptions, appearing: ViewController<*>, disappearing: ViewController<*>) {
+        val animators = mutableListOf(setRoot.content.enter.getAnimation(
+                appearing.view,
+                getDefaultSetStackRootAnimation(appearing.view)
+        ))
+        if (setRoot.content.exit.hasValue()) {
+            animators.add(setRoot.content.exit.getAnimation(disappearing.view))
+        }
+        set.playTogether(animators.toList())
+        set.start()
+    }
+
+    protected open fun createAnimatorSet(): AnimatorSet = AnimatorSet()
 
     @RestrictTo(RestrictTo.Scope.TESTS)
     fun endPushAnimation(view: ViewController<*>) {

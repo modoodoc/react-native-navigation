@@ -236,7 +236,7 @@ public class StackController extends ParentController<StackLayout> {
                     )
                 );
             } else {
-                animator.push(child, toRemove, resolvedOptions, () -> listenerAdapter.onSuccess(child.getId()));
+                animator.setRoot(child, toRemove, resolvedOptions, () -> listenerAdapter.onSuccess(child.getId()));
             }
         } else {
             listenerAdapter.onSuccess(child.getId());
