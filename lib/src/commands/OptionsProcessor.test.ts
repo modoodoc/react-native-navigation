@@ -3,7 +3,7 @@ import { UniqueIdProvider } from '../adapters/UniqueIdProvider';
 import { Store } from '../components/Store';
 import { OptionProcessorsStore } from '../processors/OptionProcessorsStore';
 import { Options, OptionsModalPresentationStyle } from '../interfaces/Options';
-import { mock, when, instance, anyNumber, verify } from 'ts-mockito';
+import { mock, when, instance, anyNumber, verify, anything } from 'ts-mockito';
 import { ColorService } from '../adapters/ColorService';
 import { AssetService } from '../adapters/AssetResolver';
 import { Deprecations } from './Deprecations';
@@ -30,9 +30,16 @@ describe('navigation options', () => {
     when(mockedColorService.toNativeColor('blue')).thenReturn(0xff0000ff);
     const colorService = instance(mockedColorService);
     optionProcessorsRegistry = new OptionProcessorsStore();
+
+    let uuid = 0;
+    const mockedUniqueIdProvider: UniqueIdProvider = mock(UniqueIdProvider);
+    when(mockedUniqueIdProvider.generate(anything())).thenCall((prefix) => {
+      return `${prefix}${++uuid}`;
+    });
+
     uut = new OptionsProcessor(
       store,
-      new UniqueIdProvider(),
+      instance(mockedUniqueIdProvider),
       optionProcessorsRegistry,
       colorService,
       assetService,
