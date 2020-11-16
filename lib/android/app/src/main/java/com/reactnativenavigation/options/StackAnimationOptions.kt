@@ -6,10 +6,7 @@ import com.reactnativenavigation.options.params.NullBool
 import com.reactnativenavigation.options.parsers.BoolParser
 import org.json.JSONObject
 
-open class StackAnimationOptions @JvmOverloads constructor(commandType: CommandType = CommandType.None, json: JSONObject? = null) : LayoutAnimation {
-    companion object {
-        enum class CommandType { None, Push, Pop, SetStackRoot }
-    }
+open class StackAnimationOptions(json: JSONObject? = null) : LayoutAnimation {
 
     @JvmField var enabled: Bool = NullBool()
     @JvmField var waitForRender: Bool = NullBool()
@@ -20,7 +17,7 @@ open class StackAnimationOptions @JvmOverloads constructor(commandType: CommandT
     override var elementTransitions = ElementTransitions()
 
     init {
-        parse(commandType, json)
+        parse(json)
     }
 
     fun mergeWith(other: StackAnimationOptions) {
@@ -51,11 +48,11 @@ open class StackAnimationOptions @JvmOverloads constructor(commandType: CommandT
         return topBar.exit.hasValue() || content.exit.hasValue() || bottomTabs.exit.hasValue() || waitForRender.hasValue()
     }
 
-    private fun parse(commandType: CommandType, json: JSONObject?) {
+    private fun parse(json: JSONObject?) {
         json ?: return
-        content = ViewAnimationOptions(commandType, json.optJSONObject("content"))
-        bottomTabs = ViewAnimationOptions(commandType, json.optJSONObject("bottomTabs"))
-        topBar = ViewAnimationOptions(commandType, json.optJSONObject("topBar"))
+        content = ViewAnimationOptions(json.optJSONObject("content"))
+        bottomTabs = ViewAnimationOptions(json.optJSONObject("bottomTabs"))
+        topBar = ViewAnimationOptions(json.optJSONObject("topBar"))
         enabled = BoolParser.parseFirst(json, "enabled", "enable")
         waitForRender = BoolParser.parse(json, "waitForRender")
         sharedElements = SharedElements.parse(json)

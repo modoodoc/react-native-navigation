@@ -17,7 +17,6 @@ import com.reactnativenavigation.mocks.TypefaceLoaderMock;
 import com.reactnativenavigation.options.AnimationOptions;
 import com.reactnativenavigation.options.Options;
 import com.reactnativenavigation.options.StackAnimationOptions;
-import com.reactnativenavigation.options.StackAnimationOptions.Companion.CommandType;
 import com.reactnativenavigation.options.params.Bool;
 import com.reactnativenavigation.options.params.Text;
 import com.reactnativenavigation.react.CommandListenerAdapter;
@@ -1128,7 +1127,7 @@ public class StackControllerTest extends BaseTest {
         ParentController parentController = Mockito.mock(ParentController.class);
         uut.setParentController(parentController);
         Options options = new Options();
-        options.animations.push = new StackAnimationOptions(CommandType.Push, new JSONObject());
+        options.animations.push = new StackAnimationOptions(new JSONObject());
         options.topBar.testId = new Text("id");
         options.fabOptions.id = new Text("fabId");
         ViewController vc = mock(ViewController.class);

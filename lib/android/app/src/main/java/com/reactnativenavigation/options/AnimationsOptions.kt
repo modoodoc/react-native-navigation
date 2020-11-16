@@ -1,6 +1,5 @@
 package com.reactnativenavigation.options
 
-import com.reactnativenavigation.options.StackAnimationOptions.Companion.CommandType
 import org.json.JSONObject
 
 class AnimationsOptions {
@@ -34,9 +33,9 @@ class AnimationsOptions {
         fun parse(json: JSONObject?): AnimationsOptions {
             val options = AnimationsOptions()
             if (json == null) return options
-            options.push = StackAnimationOptions(CommandType.Push, json.optJSONObject("push"))
-            options.pop = StackAnimationOptions(CommandType.Pop, json.optJSONObject("pop"))
-            options.setStackRoot = StackAnimationOptions(CommandType.SetStackRoot, json.optJSONObject("setStackRoot"))
+            options.push = StackAnimationOptions(json.optJSONObject("push"))
+            options.pop = StackAnimationOptions(json.optJSONObject("pop"))
+            options.setStackRoot = StackAnimationOptions(json.optJSONObject("setStackRoot"))
             options.setRoot = AnimationOptions(json.optJSONObject("setRoot"))
             options.showModal = AnimationOptions(json.optJSONObject("showModal"))
             options.dismissModal = AnimationOptions(json.optJSONObject("dismissModal"))

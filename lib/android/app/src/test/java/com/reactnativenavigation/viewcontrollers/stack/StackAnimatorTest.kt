@@ -10,7 +10,6 @@ import com.nhaarman.mockitokotlin2.verify
 import com.reactnativenavigation.BaseTest
 import com.reactnativenavigation.mocks.SimpleViewController
 import com.reactnativenavigation.options.Options
-import com.reactnativenavigation.options.StackAnimationOptions.Companion.CommandType
 import com.reactnativenavigation.options.params.Bool
 import com.reactnativenavigation.utils.createEnterExitAnimation
 import com.reactnativenavigation.viewcontrollers.child.ChildControllersRegistry
@@ -198,21 +197,21 @@ class StackAnimatorTest : BaseTest() {
 
     private fun createEnterExitPushAnimation(vc: ViewController<*>) {
         Options().apply {
-            animations.push.content = createEnterExitAnimation(CommandType.Push)
+            animations.push.content = createEnterExitAnimation()
             vc.mergeOptions(this)
         }
     }
 
     private fun createEnterExitPopAnimation(vc: ViewController<*>) {
         Options().apply {
-            animations.pop.content = createEnterExitAnimation(CommandType.Push)
+            animations.pop.content = createEnterExitAnimation()
             vc.mergeOptions(this)
         }
     }
 
     private fun createEnterExitSetRootAnimation(vc: ViewController<*>) {
         Options().apply {
-            animations.setStackRoot.content = createEnterExitAnimation(CommandType.SetStackRoot)
+            animations.setStackRoot.content = createEnterExitAnimation()
             vc.mergeOptions(this)
         }
     }

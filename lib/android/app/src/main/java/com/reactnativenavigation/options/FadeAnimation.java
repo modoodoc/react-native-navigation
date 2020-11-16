@@ -1,7 +1,5 @@
 package com.reactnativenavigation.options;
 
-import com.reactnativenavigation.options.StackAnimationOptions.Companion.CommandType;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,7 +16,7 @@ public class FadeAnimation extends StackAnimationOptions {
 
             JSONObject animation = new JSONObject();
             animation.put("content", content);
-            mergeWith(new StackAnimationOptions(reversed ? CommandType.Pop : CommandType.Push, animation));
+            mergeWith(new StackAnimationOptions(animation));
         } catch (JSONException e) {
             e.printStackTrace();
         }

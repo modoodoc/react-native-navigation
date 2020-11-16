@@ -1,13 +1,12 @@
 package com.reactnativenavigation.utils
 
 import com.reactnativenavigation.options.AnimationOptions
-import com.reactnativenavigation.options.StackAnimationOptions.Companion.CommandType
 import com.reactnativenavigation.options.ValueAnimationOptions
 import com.reactnativenavigation.options.animations.ViewAnimationOptions
 import org.json.JSONObject
 
 
-fun createEnterExitAnimation(commandType: CommandType): ViewAnimationOptions {
+fun createEnterExitAnimation(): ViewAnimationOptions {
     val alpha = JSONObject().apply {
         put("alpha", JSONObject().apply {
             put("from", 0)
@@ -18,7 +17,7 @@ fun createEnterExitAnimation(commandType: CommandType): ViewAnimationOptions {
         put("enter", alpha)
         put("exit", alpha)
     }
-    return ViewAnimationOptions(commandType, animation)
+    return ViewAnimationOptions(animation)
 }
 
 fun createContentJson(vararg values: Pair<String, ValueAnimationOptions>): AnimationOptions {
