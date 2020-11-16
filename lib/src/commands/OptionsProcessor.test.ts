@@ -325,4 +325,54 @@ describe('navigation options', () => {
       placeholder: 'foo',
     });
   });
+
+  describe('process animations options', () => {
+    it('old push.content api is converted into push.content.enter', () => {
+      const options: Options = {
+        animations: {
+          push: {
+            content: {
+              alpha: {
+                from: 0,
+                to: 1,
+              },
+            },
+          },
+        },
+      };
+      uut.processOptions(options, CommandName.Push);
+      expect(options.animations!!.push?.content).toStrictEqual({
+        enter: {
+          alpha: {
+            from: 0,
+            to: 1,
+          },
+        },
+      });
+    });
+
+    it('old pop.content api is converted into pop.content.exit', () => {
+      const options: Options = {
+        animations: {
+          pop: {
+            content: {
+              alpha: {
+                from: 0,
+                to: 1,
+              },
+            },
+          },
+        },
+      };
+      uut.processOptions(options, CommandName.Push);
+      expect(options.animations!!.pop?.content).toStrictEqual({
+        exit: {
+          alpha: {
+            from: 0,
+            to: 1,
+          },
+        },
+      });
+    });
+  });
 });

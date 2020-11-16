@@ -5,6 +5,7 @@ import isArray from 'lodash/isArray';
 import isString from 'lodash/isString';
 import endsWith from 'lodash/endsWith';
 import forEach from 'lodash/forEach';
+import has from 'lodash/has';
 
 import { Store } from '../components/Store';
 import { UniqueIdProvider } from '../adapters/UniqueIdProvider';
@@ -69,6 +70,7 @@ export class OptionsProcessor {
       this.processButtonsPassProps(key, value);
       this.processSearchBar(key, value, objectToProcess);
       this.processInterpolation(key, value, objectToProcess);
+      this.processAnimation(key, value, objectToProcess);
 
       onProcess(key, parentOptions);
 
@@ -177,6 +179,28 @@ export class OptionsProcessor {
         options[key] = {
           type: options[key],
         };
+      }
+    }
+  }
+
+  private processAnimation(key: string, value: any, options: Record<string, any>) {
+    if (isEqual(key, 'push')) {
+      if (has(value, 'content')) {
+        if (!has(value, 'content.enter') && !has(value, 'content.exit')) {
+          options.push.content = {
+            enter: value.content,
+          };
+        }
+      }
+    }
+
+    if (isEqual(key, 'pop')) {
+      if (has(value, 'content')) {
+        if (!has(value, 'content.enter') && !has(value, 'content.exit')) {
+          options.pop.content = {
+            exit: value.content,
+          };
+        }
       }
     }
   }
