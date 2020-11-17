@@ -2,7 +2,11 @@ import { OptionsProcessor } from './OptionsProcessor';
 import { UniqueIdProvider } from '../adapters/UniqueIdProvider';
 import { Store } from '../components/Store';
 import { OptionProcessorsStore } from '../processors/OptionProcessorsStore';
-import { Options, OptionsModalPresentationStyle } from '../interfaces/Options';
+import {
+  Options,
+  OptionsModalPresentationStyle,
+  StackAnimationOptions,
+} from '../interfaces/Options';
 import { mock, when, instance, anyNumber, verify, anything } from 'ts-mockito';
 import { ColorService } from '../adapters/ColorService';
 import { AssetService } from '../adapters/AssetResolver';
@@ -327,51 +331,233 @@ describe('navigation options', () => {
   });
 
   describe('process animations options', () => {
-    it('old push.content api is converted into push.content.enter', () => {
-      const options: Options = {
-        animations: {
-          push: {
-            content: {
-              alpha: {
-                from: 0,
-                to: 1,
+    describe('push', () => {
+      it('old push.content api is converted into push.content.enter', () => {
+        const options: Options = {
+          animations: {
+            push: {
+              content: {
+                alpha: {
+                  from: 0,
+                  to: 1,
+                },
               },
             },
           },
-        },
-      };
-      uut.processOptions(options, CommandName.Push);
-      expect(options.animations!!.push?.content).toStrictEqual({
-        enter: {
-          alpha: {
-            from: 0,
-            to: 1,
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect(options.animations!!.push?.content).toStrictEqual({
+          enter: {
+            alpha: {
+              from: 0,
+              to: 1,
+            },
           },
-        },
+        });
+      });
+
+      it('StackAnimationOptions based push api is left as is', () => {
+        const options: Options = {
+          animations: {
+            push: {
+              content: {
+                exit: {
+                  alpha: {
+                    from: 1,
+                    to: 0,
+                  },
+                },
+                enter: {
+                  alpha: {
+                    from: 0,
+                    to: 1,
+                  },
+                },
+              },
+            },
+          },
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect(options.animations!!.push!!.content).toStrictEqual({
+          exit: {
+            alpha: {
+              from: 1,
+              to: 0,
+            },
+          },
+          enter: {
+            alpha: {
+              from: 0,
+              to: 1,
+            },
+          },
+        });
+      });
+
+      it('Disabled ViewAnimationOptions based push api is converted to StackAnimationOptions based api', () => {
+        const options: Options = {
+          animations: {
+            push: {
+              content: {
+                enabled: false,
+              },
+            },
+          },
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect((options.animations!!.push as StackAnimationOptions).content).toStrictEqual({
+          enter: {
+            enabled: false,
+          },
+        });
       });
     });
 
-    it('old pop.content api is converted into pop.content.exit', () => {
-      const options: Options = {
-        animations: {
-          pop: {
-            content: {
+    describe('pop', () => {
+      it('old pop.content api is converted into pop.content.exit', () => {
+        const options: Options = {
+          animations: {
+            pop: {
+              content: {
+                alpha: {
+                  from: 0,
+                  to: 1,
+                },
+              },
+            },
+          },
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect(options.animations!!.pop?.content).toStrictEqual({
+          exit: {
+            alpha: {
+              from: 0,
+              to: 1,
+            },
+          },
+        });
+      });
+
+      it('StackAnimationOptions based pop api is left as is', () => {
+        const options: Options = {
+          animations: {
+            pop: {
+              content: {
+                exit: {
+                  alpha: {
+                    from: 1,
+                    to: 0,
+                  },
+                },
+                enter: {
+                  alpha: {
+                    from: 0,
+                    to: 1,
+                  },
+                },
+              },
+            },
+          },
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect(options.animations!!.pop?.content).toStrictEqual({
+          exit: {
+            alpha: {
+              from: 1,
+              to: 0,
+            },
+          },
+          enter: {
+            alpha: {
+              from: 0,
+              to: 1,
+            },
+          },
+        });
+      });
+
+      it('Disabled ViewAnimationOptions based pop api is converted to StackAnimationOptions based api', () => {
+        const options: Options = {
+          animations: {
+            pop: {
+              content: {
+                enabled: false,
+              },
+            },
+          },
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect((options.animations!!.pop as StackAnimationOptions).content).toStrictEqual({
+          exit: {
+            enabled: false,
+          },
+        });
+      });
+    });
+
+    describe('setStackRoot', () => {
+      it('ViewAnimationOptions based setStackRoot api is converted to StackAnimationOptions based api', () => {
+        const options: Options = {
+          animations: {
+            setStackRoot: {
               alpha: {
                 from: 0,
                 to: 1,
               },
             },
           },
-        },
-      };
-      uut.processOptions(options, CommandName.Push);
-      expect(options.animations!!.pop?.content).toStrictEqual({
-        exit: {
-          alpha: {
-            from: 0,
-            to: 1,
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect((options.animations!!.setStackRoot as StackAnimationOptions).content).toStrictEqual({
+          enter: {
+            alpha: {
+              from: 0,
+              to: 1,
+            },
           },
-        },
+        });
+      });
+
+      it('Disabled ViewAnimationOptions based setStackRoot api is converted to StackAnimationOptions based api', () => {
+        const options: Options = {
+          animations: {
+            setStackRoot: {
+              enabled: false,
+            },
+          },
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect((options.animations!!.setStackRoot as StackAnimationOptions).content).toStrictEqual({
+          enter: {
+            enabled: false,
+          },
+        });
+      });
+
+      it('StackAnimationOptions based setStackRoot api is left as is', () => {
+        const options: Options = {
+          animations: {
+            setStackRoot: {
+              content: {
+                enter: {
+                  alpha: {
+                    from: 0,
+                    to: 1,
+                  },
+                },
+              },
+            },
+          },
+        };
+        uut.processOptions(options, CommandName.SetRoot);
+        expect((options.animations!!.setStackRoot as StackAnimationOptions).content).toStrictEqual({
+          enter: {
+            alpha: {
+              from: 0,
+              to: 1,
+            },
+          },
+        });
       });
     });
   });

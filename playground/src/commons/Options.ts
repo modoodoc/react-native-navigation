@@ -3,7 +3,7 @@ import {
   AnimationOptions,
   OptionsModalPresentationStyle,
 } from 'react-native-navigation';
-import { Dimensions, Platform } from 'react-native';
+import { Dimensions } from 'react-native';
 import Colors from './Colors';
 import flags from '../flags';
 
@@ -34,39 +34,7 @@ const setDefaultOptions = () =>
     modalPresentationStyle: OptionsModalPresentationStyle.fullScreen,
   });
 
-const slideAnimationsIOS: AnimationOptions = {
-  push: {
-    waitForRender: true,
-    content: {
-      translationX: {
-        from: width,
-        to: 0,
-        duration: useSlowOpenScreenAnimations ? SHOW_DURATION : 300,
-      },
-      alpha: {
-        from: 0.7,
-        to: 1,
-        duration: useSlowOpenScreenAnimations ? SHOW_DURATION : 300,
-      },
-    },
-  },
-  pop: {
-    content: {
-      translationX: {
-        from: 0,
-        to: width,
-        duration: useSlowOpenScreenAnimations ? SHOW_DURATION : 300,
-      },
-      alpha: {
-        from: 1,
-        to: 0.3,
-        duration: useSlowOpenScreenAnimations ? SHOW_DURATION : 300,
-      },
-    },
-  },
-};
-
-const slideAnimationsAndroid: AnimationOptions = {
+const slideAnimations: AnimationOptions = {
   push: {
     waitForRender: true,
     content: {
@@ -129,11 +97,6 @@ const slideAnimationsAndroid: AnimationOptions = {
     },
   },
 };
-
-const slideAnimations = Platform.select({
-  ios: slideAnimationsIOS,
-  android: slideAnimationsAndroid,
-});
 
 const customAnimations: AnimationOptions = {
   showModal: {
