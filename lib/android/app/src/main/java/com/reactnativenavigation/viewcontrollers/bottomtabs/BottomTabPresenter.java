@@ -60,8 +60,8 @@ public class BottomTabPresenter {
                 if (tab.iconColor.canApplyValue()) bottomTabs.setIconInactiveColor(i, tab.iconColor.get(null));
                 bottomTabs.setTitleActiveColor(i, tab.selectedTextColor.get(null));
                 bottomTabs.setTitleInactiveColor(i, tab.textColor.get(null));
-                bottomTabs.setTitleInactiveTextSizeInSp(i, tab.fontSize.hasValue() ? Float.valueOf(tab.fontSize.get()) : null);
-                bottomTabs.setTitleActiveTextSizeInSp(i, tab.selectedFontSize.hasValue() ? Float.valueOf(tab.selectedFontSize.get()) : null);
+                bottomTabs.setTitleInactiveTextSizeInSp(i, (tab.fontSize != null && tab.fontSize.hasValue()) ? ( tab.fontSize.get() != null ? Float.valueOf(tab.fontSize.get()) : null) : null);
+                bottomTabs.setTitleActiveTextSizeInSp(i, (tab.selectedFontSize != null && tab.selectedFontSize.hasValue()) ? (tab.selectedFontSize.get() != null ? Float.valueOf(tab.selectedFontSize.get()) : null) : null);
                 if (tab.testId.hasValue()) bottomTabs.setTag(i, tab.testId.get());
                 if (shouldApplyDot(tab)) applyDotIndicator(i, tab.dotIndicator); else applyBadge(i, tab);
             }
