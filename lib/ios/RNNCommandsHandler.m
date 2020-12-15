@@ -95,6 +95,7 @@ static NSString *const setDefaultOptions = @"setDefaultOptions";
     [vc setReactViewReadyCallback:^{
       [self->_mainWindow.rootViewController destroy];
       self->_mainWindow.rootViewController = weakVC;
+      [UIApplication sharedApplication].windows.firstObject.hidden=NO;
 
       [self->_setRootAnimator
              animate:self->_mainWindow
